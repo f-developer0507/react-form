@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { nanoid } from "nanoid";
 import "./App.css";
 
 const App = () => {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({});
+  const [search, setSearch] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -12,35 +14,72 @@ const App = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    users.push(form);
+    let id = nanoid();
+    const payload = { ...form, id };
+    users.push(payload);
     setUsers([...users]);
     e.target.reset();
+  };
+
+  const deleteUser = (id) => {
+    let newUsers = users.filter((item) => item.id != id);
+    setUsers([...newUsers]);
   };
 
   return (
     <div className="container">
       <div className="row mt-5">
         <div className="col-md-8">
+          <div className="row">
+            <div className="col-mf-4">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="form-control mb-2"
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </div>
           <table className="table table-bordered table-hover table-striped">
             <thead>
               <tr>
                 <td>T/R</td>
+                <td>Id</td>
                 <td>Name</td>
                 <td>Age</td>
                 <td>Phone</td>
                 <td>Address</td>
+                <td>Address</td>
               </tr>
             </thead>
             <tbody>
-              {users?.map((item, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{item.name}</td>
-                  <td>{item.age}</td>
-                  <td>{item.phone}</td>
-                  <td>{item.address}</td>
-                </tr>
-              ))}
+              {users?.filter((item) => {
+                let name = item.name.toLocaleLowerCase()
+                let address = item.address.toLocaleLowerCase()
+                let find = search.toLocaleLowerCase()
+                  if (name.includes(find) || address.includes(find)) {
+                    return item;
+                  }
+                })
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{item.id}</td>
+                    <td>{item.name}</td>
+                    <td>{item.age}</td>
+                    <td>{item.phone}</td>
+                    <td>{item.address}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => deleteUser(item.id)}
+                      >
+                        <i className="fa-solid fa-trash-can"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
