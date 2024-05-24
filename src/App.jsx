@@ -1,136 +1,86 @@
 import { useState } from "react";
-import { nanoid } from "nanoid";
 import "./App.css";
+import Card from "./components/card/Card";
+import { nanoid } from "nanoid";
 
 const App = () => {
-  const [users, setUsers] = useState([]);
+  const [animals, setAnimals] = useState([
+    {
+      id: 1,
+      name: "Animal-1",
+      desc: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloribus expedita debitis iure",
+    },
+    {
+      id: 2,
+      name: "Animal-2",
+      desc: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloribus expedita debitis iure",
+    },
+    {
+      id: 3,
+      name: "Animal-3",
+      desc: "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloribus expedita debitis iure",
+    },
+  ]);
   const [form, setForm] = useState({});
-  const [search, setSearch] = useState("");
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    let id = nanoid();
+    const id = nanoid();
     const payload = { ...form, id };
-    users.push(payload);
-    setUsers([...users]);
+    animals.push(payload);
+    setAnimals([...animals]);
     e.target.reset();
   };
 
-  const deleteUser = (id) => {
-    let newUsers = users.filter((item) => item.id != id);
-    setUsers([...newUsers]);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const deleteAnimal = (id) => {
+    const newAnimal = animals.filter((item) => item.id !== id);
+    setAnimals([...newAnimal]);
   };
 
   return (
     <div className="container">
-      <div className="row mt-5">
-        <div className="col-md-8">
-          <div className="row">
-            <div className="col-mf-4">
-              <input
-                type="text"
-                placeholder="Search..."
-                className="form-control mb-2"
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
-          <table className="table table-bordered table-hover table-striped">
-            <thead>
-              <tr>
-                <td>T/R</td>
-                <td>Id</td>
-                <td>Name</td>
-                <td>Age</td>
-                <td>Phone</td>
-                <td>Address</td>
-                <td>Address</td>
-              </tr>
-            </thead>
-            <tbody>
-              {users?.filter((item) => {
-                let name = item.name.toLocaleLowerCase()
-                let address = item.address.toLocaleLowerCase()
-                let find = search.toLocaleLowerCase()
-                  if (name.includes(find) || address.includes(find)) {
-                    return item;
-                  }
-                })
-                .map((item, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{item.id}</td>
-                    <td>{item.name}</td>
-                    <td>{item.age}</td>
-                    <td>{item.phone}</td>
-                    <td>{item.address}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="btn btn-danger"
-                        onClick={() => deleteUser(item.id)}
-                      >
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="col-md-4">
+      <div className="row my-4">
+        <div className="col-md-8 offset-2">
           <div className="card">
-            <div className="card-header">
-              <h3 className="text-center">Add User</h3>
-            </div>
             <div className="card-body">
               <form id="submit" onSubmit={handleSubmit}>
                 <input
+                  onChange={handleChange}
                   name="name"
-                  onChange={handleChange}
                   type="text"
-                  placeholder="Name"
+                  placeholder="Animal name ..."
                   className="form-control my-2"
                   required
                 />
-                <input
-                  name="age"
+                <textarea
                   onChange={handleChange}
-                  type="number"
-                  placeholder="Age"
+                  name="desc"
+                  cols={30}
+                  rows={10}
+                  placeholder="Description"
                   className="form-control my-2"
                   required
-                />
-                <input
-                  name="phone"
-                  onChange={handleChange}
-                  type="tel"
-                  placeholder="Phone"
-                  className="form-control my-2"
-                  required
-                />
-                <input
-                  name="address"
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="Address"
-                  className="form-control my-2"
-                  required
-                />
+                ></textarea>
               </form>
             </div>
             <div className="card-footer">
-              <button className="btn btn-primary" type="submit" form="submit">
-                add user
+              <button type="submit" className="btn btn-success" form="submit">
+                add animal
               </button>
             </div>
           </div>
         </div>
+      </div>
+      <div className="container-row">
+        {animals.map((item, index) => (
+          <div className="row-card" key={index}>
+            <Card animal={item} deleteAnimal={deleteAnimal} />
+          </div>
+        ))}
       </div>
     </div>
   );
